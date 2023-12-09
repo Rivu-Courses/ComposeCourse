@@ -31,12 +31,14 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.navigation.NavHostController
 import dev.rivu.composeclass1.R
 import dev.rivu.composeclass1.ui.theme.ComposeClass1Theme
 
 @Composable
 fun UserInteraction(
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    navController: NavHostController? = null
 ) {
     var count by rememberSaveable {
         mutableIntStateOf(0)
@@ -76,6 +78,22 @@ fun UserInteraction(
             )
             Text("Click Me")
         }
+        navController?.let {
+            Button(
+                onClick = {
+                    val parameter = "From Last Class"
+                    navController.navigate("screen2?parameter=$parameter")
+                },
+                modifier = Modifier.align(Alignment.CenterEnd)
+            ) {
+                Icon(
+                    painter = painterResource(androidx.core.R.drawable.ic_call_answer),
+                    contentDescription = "Some Icon",
+                )
+                Text("Navigate to Screen 2")
+            }
+        }
+
 
         ListDemo(
             listOfStrings = items,

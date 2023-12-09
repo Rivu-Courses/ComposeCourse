@@ -15,11 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontFamily
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import androidx.core.view.WindowCompat
+import dev.rivu.composeclass1.R
 
 private val DarkColorScheme = darkColorScheme(
     primary = Purple80,
@@ -56,7 +58,9 @@ fun ComposeClass1Theme(
             if (darkTheme) dynamicDarkColorScheme(context) else dynamicLightColorScheme(context)
         }
 
-        darkTheme -> DarkColorScheme
+        darkTheme -> DarkColorScheme.copy(
+            primary = colorResource(R.color.black)
+        )
         else -> LightColorScheme
     }
     val view = LocalView.current

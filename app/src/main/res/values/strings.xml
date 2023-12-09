@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Compose Class 1</string>
+    <string name="formatted_string">Compose Class 1 %s %s</string>
 </resources>
