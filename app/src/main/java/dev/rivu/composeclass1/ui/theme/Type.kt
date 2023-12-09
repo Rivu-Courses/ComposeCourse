@@ -70,3 +70,41 @@ val Typography = Typography(
     )
     */
 )
+
+val SilkscreenFamily = FontFamily(
+    listOf(
+        Font(
+            R.font.silkscreen_regular,
+            weight = FontWeight.Normal
+        ),
+        Font(
+            R.font.silkscreen_bold,
+            weight = FontWeight.Bold
+        )
+    )
+)
+
+val TekoFamily = FontFamily(
+    listOf(
+        Font(
+            R.font.teko_regular,
+            weight = FontWeight.Normal
+        ),
+        Font(
+            R.font.teko_bold,
+            weight = FontWeight.Bold
+        ),
+        Font(
+            R.font.teko_semibold,
+            weight = FontWeight.SemiBold
+        ),
+        Font(
+            R.font.teko_light,
+            weight = FontWeight.Light
+        ),
+        Font(
+            R.font.teko_medium,
+            weight = FontWeight.Medium
+        ),
+    )
+)

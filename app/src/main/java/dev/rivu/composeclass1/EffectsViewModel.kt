@@ -12,6 +12,8 @@ import kotlinx.coroutines.launch
 class EffectsViewModel: ViewModel() {
     val state = mutableStateOf<State>(State.Loading)
 
+    val codeScreenState = mutableStateOf<CodeWithRivuScreenData>(CodeWithRivuScreenData.Loading)
+
     fun loadData(): Job {
             Log.d("Effects", "loadData called")
         state.value = State.Loading
@@ -20,6 +22,31 @@ class EffectsViewModel: ViewModel() {
             state.value = State.Succcess(
                 timestamp = System.currentTimeMillis(),
                 validity = 10000
+            )
+        }
+    }
+
+    fun loadScreenData() {
+        viewModelScope.launch {
+            delay(1000)
+            codeScreenState.value = CodeWithRivuScreenData.Success(
+                helloText = "Hi, I’m Rivu Chakraborty! \uD83D\uDC4B",
+                cardData = listOf(
+                    "Card 1",
+                    "Card 2",
+                    "Card 3",
+                )
+            )
+
+            delay(10000)
+            codeScreenState.value = CodeWithRivuScreenData.Success(
+                helloText = "bcdhjsbhjbsdc Hi, I’m Rivu Chakraborty! \uD83D\uDC4B",
+                cardData = listOf(
+                    "Cards 1",
+                    "Cards 2",
+                    "Cards 3",
+                    "Cards 4",
+                )
             )
         }
     }
@@ -39,4 +66,13 @@ sealed class State {
     data class Error(
         val errorDetails: String
     ): State()
+}
+
+sealed class CodeWithRivuScreenData {
+    object Loading: CodeWithRivuScreenData()
+
+    data class Success(
+        val helloText: String,
+        val cardData: List<String>
+    ): CodeWithRivuScreenData()
 }
