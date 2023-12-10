@@ -15,6 +15,7 @@ import dev.rivu.composeclass1.ui.ComplexScreen
 import dev.rivu.composeclass1.ui.Effects
 import dev.rivu.composeclass1.ui.HomePage
 import dev.rivu.composeclass1.ui.HomePageState
+import dev.rivu.composeclass1.ui.ModifierDraw
 import dev.rivu.composeclass1.ui.NestedScrolling
 import dev.rivu.composeclass1.ui.UserInteraction
 import dev.rivu.composeclass1.ui.ViewModelScreen
@@ -42,7 +43,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ComplexScreen()
+                    ModifierDraw()
                 }
             }
         }
