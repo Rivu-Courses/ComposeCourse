@@ -2,9 +2,11 @@ package dev.rivu.composeclass1.ui
 
 import android.graphics.BitmapFactory
 import android.widget.Space
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -16,6 +18,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -33,7 +36,9 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.CompositingStrategy
 import androidx.compose.ui.graphics.Path
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.drawscope.clipPath
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
@@ -72,7 +77,7 @@ fun ModifierDraw() {
                 .onSizeChanged {
                     pointerOffsetLineEnd = Offset(it.width * 1f, it.height / 2f)
                     pointerOffsetLineStart = Offset(0f, it.height / 2f)
-                    centerPointerOffset = Offset(it.width/2f, it.height/2f)
+                    centerPointerOffset = Offset(it.width / 2f, it.height / 2f)
                 }
                 .drawWithCache {
                     val brushRect = Brush.linearGradient(
@@ -200,8 +205,35 @@ fun ModifierDraw() {
         }
 
     }
+}
 
+@Composable
+fun CanvasDraw(modifier: Modifier = Modifier) {
+    val colors by remember {
+        derivedStateOf {
+            listOf(Color.Yellow, Color.Red, Color.Magenta)
+        }
+    }
+    Box(modifier = modifier) {
 
-
-
+        Canvas(modifier = Modifier
+            .size(150.dp)
+            .padding(18.dp)) {
+            drawRoundRect(
+                brush = Brush.linearGradient(colors = colors),
+                cornerRadius = CornerRadius(60f, 60f),
+                style = Stroke(width = 15f, cap = StrokeCap.Round)
+            )
+            drawCircle(
+                brush = Brush.linearGradient(colors = colors),
+                radius = 45f,
+                style = Stroke(width = 15f, cap = StrokeCap.Round)
+            )
+            drawCircle(
+                brush = Brush.linearGradient(colors = colors),
+                radius = 13f,
+                center = Offset(this.size.width * .80f, this.size.height * 0.20f),
+            )
+        }
+    }
 }

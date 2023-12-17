@@ -9,16 +9,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import dev.rivu.composeclass1.ui.AppHome
-import dev.rivu.composeclass1.ui.BottomSheets
-import dev.rivu.composeclass1.ui.ComplexScreen
-import dev.rivu.composeclass1.ui.Effects
-import dev.rivu.composeclass1.ui.HomePage
+import dev.rivu.composeclass1.ui.AnchoredDrag
+import dev.rivu.composeclass1.ui.DragText
 import dev.rivu.composeclass1.ui.HomePageState
-import dev.rivu.composeclass1.ui.ModifierDraw
-import dev.rivu.composeclass1.ui.NestedScrolling
-import dev.rivu.composeclass1.ui.UserInteraction
-import dev.rivu.composeclass1.ui.ViewModelScreen
 import dev.rivu.composeclass1.ui.theme.ComposeClass1Theme
 
 class MainActivity : ComponentActivity() {
@@ -43,7 +36,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    ModifierDraw()
+                    DragText()
                 }
             }
         }
