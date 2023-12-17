@@ -15,9 +15,15 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material.Divider
+import androidx.compose.material.ExperimentalMaterialApi
+import androidx.compose.material.FractionalThreshold
 import androidx.compose.material.Text
+import androidx.compose.material.rememberSwipeableState
+import androidx.compose.material.swipeable
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -133,6 +139,40 @@ fun DragText() {
                 .background(Color.Cyan)
                 .padding(15.dp)
         )
+    }
+}
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun SwipeDrag() {
+    Box(modifier = Modifier.fillMaxSize()) {
+        val width = 96.dp
+        val squareSize = 48.dp
+
+        val swipeableState = rememberSwipeableState(0)
+        val sizePx = with(LocalDensity.current) { squareSize.toPx() }
+        val anchors = mapOf(0f to 0, sizePx to 1) // Maps anchor points (in px) to states
+
+        Box(
+            modifier = Modifier
+                .width(width)
+                .align(Alignment.Center)
+                .swipeable(
+                    state = swipeableState,
+                    anchors = anchors,
+                    thresholds = { _, _ -> FractionalThreshold(0.3f) },
+                    orientation = Orientation.Horizontal
+                )
+                .background(Color.LightGray)
+        ) {
+            Box(
+                Modifier
+                    .offset { IntOffset(swipeableState.offset.value.roundToInt(), 0) }
+                    .size(squareSize)
+                    .background(Color.DarkGray)
+            ) {
+                Text("Swipe", color = Color.White, modifier = Modifier.align(Alignment.Center))
+            }
+        }
     }
 }
 

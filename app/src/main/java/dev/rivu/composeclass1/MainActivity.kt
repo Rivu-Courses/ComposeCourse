@@ -12,6 +12,7 @@ import androidx.compose.ui.Modifier
 import dev.rivu.composeclass1.ui.AnchoredDrag
 import dev.rivu.composeclass1.ui.DragText
 import dev.rivu.composeclass1.ui.HomePageState
+import dev.rivu.composeclass1.ui.SwipeDrag
 import dev.rivu.composeclass1.ui.theme.ComposeClass1Theme
 
 class MainActivity : ComponentActivity() {
@@ -36,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    DragText()
+                    SwipeDrag()
                 }
             }
         }
