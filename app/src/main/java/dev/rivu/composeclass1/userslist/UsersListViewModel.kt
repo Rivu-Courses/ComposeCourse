@@ -1,7 +1,6 @@
 package dev.rivu.composeclass1.userslist
 
 import android.util.Log
-import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.setValue
@@ -39,14 +38,16 @@ class UsersListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 delay(1000)
-                val users = usersRepo.getUsersList(pageNo)
+                val usersListModel = usersRepo.getUsersList(pageNo)
+                val users = usersListModel.users
                 Log.d("Pagination", "Page $pageNo")
 
                 val updatedState = usersState.copy(
                     users = (usersState.users ?: emptyList()) + users,
                     isPaginationLoading = false,
                     isLoading = false,
-                    errorDetails = null
+                    errorDetails = null,
+                    canPaginate = usersListModel.currentPage < usersListModel.totalPageCount
                 )
 
                 withContext(Dispatchers.Main) {
@@ -56,7 +57,7 @@ class UsersListViewModel @Inject constructor(
             } catch(e: Exception) {
                 withContext(Dispatchers.Main) {
                     usersState = usersState.copy(
-                        errorDetails = e.message ?: "Something went wrong",
+                        errorDetails = Error.CustomError(e.message ?: "Something went wrong"),
                         isLoading = false,
                         isPaginationLoading = false
                     )
@@ -72,5 +73,14 @@ data class UsersState (
     val isLoading: Boolean = false,
     val isPaginationLoading: Boolean = false,
     val isP2RLoading: Boolean = false,
-    val errorDetails: String? = null,
+    val errorDetails: Error? = null,
+    val canPaginate: Boolean = true,
 )
+
+sealed class Error(
+    open val message: String
+) {
+    object ServerError: Error(message = "Server Error Happened.\nPlease Try Again")
+
+    data class CustomError(override val message: String): Error(message)
+}
