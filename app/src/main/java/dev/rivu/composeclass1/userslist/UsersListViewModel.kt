@@ -1,53 +1,61 @@
-package dev.rivu.composeclass1
+package dev.rivu.composeclass1.userslist
 
+import android.util.Log
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import dev.rivu.composeclass1.data.UsersRepository
-import dev.rivu.composeclass1.data.model.UserDataModel
+import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.rivu.composeclass1.userslist.data.UsersRepository
+import dev.rivu.composeclass1.userslist.data.model.UserDataModel
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+import javax.inject.Inject
 
-class UsersListViewModel(
+@HiltViewModel
+class UsersListViewModel @Inject constructor(
     private val usersRepo: UsersRepository
 ): ViewModel() {
-    private val _usersState: MutableState<UsersState> = mutableStateOf(UsersState())
-    val usersState: State<UsersState> = _usersState
+    var usersState: UsersState by mutableStateOf(UsersState())
+        private set
 
     private var pageNo: Int = 0
 
     fun fetchUsers() {
-        _usersState.value = if (usersState.value.users.isNullOrEmpty()) {
+        usersState = if (usersState.users.isNullOrEmpty()) {
             UsersState(
                 isLoading = true
             )
         } else {
-            usersState.value.copy(
+            usersState.copy(
                 isPaginationLoading = true
             )
         }
 
         viewModelScope.launch(Dispatchers.IO) {
             try {
+                delay(1000)
                 val users = usersRepo.getUsersList(pageNo)
+                Log.d("Pagination", "Page $pageNo")
 
-                val updatedState = usersState.value.copy(
-                    users = (usersState.value.users ?: emptyList()) + users,
+                val updatedState = usersState.copy(
+                    users = (usersState.users ?: emptyList()) + users,
                     isPaginationLoading = false,
                     isLoading = false,
                     errorDetails = null
                 )
 
                 withContext(Dispatchers.Main) {
-                    _usersState.value = updatedState
+                    usersState = updatedState
                 }
                 pageNo++
             } catch(e: Exception) {
                 withContext(Dispatchers.Main) {
-                    _usersState.value = usersState.value.copy(
+                    usersState = usersState.copy(
                         errorDetails = e.message ?: "Something went wrong",
                         isLoading = false,
                         isPaginationLoading = false

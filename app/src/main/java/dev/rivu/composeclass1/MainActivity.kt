@@ -9,12 +9,17 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import dagger.hilt.EntryPoint
+import dagger.hilt.android.AndroidEntryPoint
+import dagger.hilt.android.HiltAndroidApp
 import dev.rivu.composeclass1.ui.AnchoredDrag
 import dev.rivu.composeclass1.ui.DragText
 import dev.rivu.composeclass1.ui.HomePageState
 import dev.rivu.composeclass1.ui.SwipeDrag
 import dev.rivu.composeclass1.ui.theme.ComposeClass1Theme
+import dev.rivu.composeclass1.userslist.ui.PaginatedUsersListScreen
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
 
     val homePageState = HomePageState(
@@ -37,7 +42,7 @@ class MainActivity : ComponentActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colorScheme.background
                 ) {
-                    SwipeDrag()
+                    PaginatedUsersListScreen()
                 }
             }
         }

@@ -1,4 +1,4 @@
-package dev.rivu.composeclass1.data.remote
+package dev.rivu.composeclass1.userslist.data.remote
 
 import android.util.Log
 import com.google.gson.FieldNamingPolicy
@@ -10,7 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 import java.util.concurrent.TimeUnit
 
-class RetrofitFactory {
+object RetrofitFactory {
     fun getRetrofit(baseUrl: String): Retrofit {
         return makeRetrofit(
             okHttpClient = makeOkHttpClient(makeLoggingInterceptor()),

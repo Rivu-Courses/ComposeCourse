@@ -1,9 +1,13 @@
-package dev.rivu.composeclass1.data
+package dev.rivu.composeclass1.userslist.data
 
-import dev.rivu.composeclass1.data.model.UserDataModel
-import dev.rivu.composeclass1.data.remote.UsersRemoteDS
+import android.util.Log
+import dagger.hilt.android.scopes.ViewModelScoped
+import dev.rivu.composeclass1.userslist.data.model.UserDataModel
+import dev.rivu.composeclass1.userslist.data.remote.UsersRemoteDS
+import javax.inject.Inject
 
-class UsersRepository(
+@ViewModelScoped
+class UsersRepository @Inject constructor(
     private val usersRemoteDS: UsersRemoteDS
 ) {
     suspend fun getUsersList(
@@ -13,6 +17,8 @@ class UsersRepository(
         val offset = pageNo * limit
 
         val usersResponse = usersRemoteDS.getUsers(offset)
+
+        Log.d("Pagination", "offset $offset")
 
         return usersResponse.users.map {
             UserDataModel(

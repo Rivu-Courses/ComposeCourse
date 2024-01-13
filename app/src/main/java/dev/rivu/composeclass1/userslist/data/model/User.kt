@@ -1,4 +1,4 @@
-package dev.rivu.composeclass1.data.model
+package dev.rivu.composeclass1.userslist.data.model
 
 import com.google.gson.annotations.SerializedName
 

@@ -1,6 +1,6 @@
-package dev.rivu.composeclass1.data.remote
+package dev.rivu.composeclass1.userslist.data.remote
 
-import dev.rivu.composeclass1.data.model.UsersResponse
+import dev.rivu.composeclass1.userslist.data.model.UsersResponse
 import retrofit2.http.GET
 import retrofit2.http.Query
 

@@ -1,4 +1,4 @@
-package dev.rivu.composeclass1.data.model
+package dev.rivu.composeclass1.userslist.data.model
 
 data class UserDataModel (
     val id: Int = 0,
