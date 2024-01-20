@@ -59,7 +59,7 @@ fun PaginatedUsersListScreen(
                     state.users,
                     state.isPaginationLoading,
                     state.canPaginate,
-                    false,
+                    state.isP2RLoading,
                     modifier = Modifier.fillMaxSize(),
                     fetchNextPage = {
                         viewModel.fetchUsers()
