@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -16,7 +17,11 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.Card
+import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
+import androidx.compose.material.pullrefresh.PullRefreshIndicator
+import androidx.compose.material.pullrefresh.pullRefresh
+import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
@@ -50,41 +55,78 @@ fun PaginatedUsersListScreen(
                 Text("Error ${state.errorDetails.message}")
             }
             !state.users.isNullOrEmpty() -> {
-                val listState: LazyGridState = rememberLazyGridState()
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    state = listState,
-                    contentPadding = PaddingValues(5.dp)
-                ) {
-                    items(state.users) {
-                        UsersItem(it)
-                    }
-                    if (state.isPaginationLoading) {
-                        item(
-                            span = {
-                                GridItemSpan(2)
-                            }
-                        ) {
-                            Card(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .wrapContentHeight()
-                            ) {
-                                Text("Loading Pagination")
-                            }
-                        }
-                    }
-                }
-
-                LaunchedEffect(listState.layoutInfo.visibleItemsInfo.lastIndex) {
-                    if (state.canPaginate && (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                            ?: 0) >= (state.users.size - 1)
-                    ) {
+                ShowUsersList(
+                    state.users,
+                    state.isPaginationLoading,
+                    state.canPaginate,
+                    false,
+                    modifier = Modifier.fillMaxSize(),
+                    fetchNextPage = {
                         viewModel.fetchUsers()
+                    },
+                    onRefresh = {
+                        viewModel.fetchUsers(true)
                     }
-                    Log.d("Pagination", "${listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index} ${state.users.size}")
+                )
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterialApi::class)
+@Composable
+fun ShowUsersList(
+    users: List<UserDataModel>,
+    isPaginationLoading: Boolean,
+    canPaginate: Boolean,
+    isRefreshing: Boolean,
+    modifier: Modifier = Modifier,
+    fetchNextPage: () -> Unit,
+    onRefresh: () -> Unit
+) {
+    val refershState = rememberPullRefreshState(isRefreshing, onRefresh = onRefresh)
+    Box(
+        modifier = modifier.pullRefresh(refershState, true)
+    ) {
+        val listState: LazyGridState = rememberLazyGridState()
+        LazyVerticalGrid(
+            columns = GridCells.Fixed(2),
+            state = listState,
+            contentPadding = PaddingValues(5.dp)
+        ) {
+            items(users) {
+                UsersItem(it)
+            }
+            if (isPaginationLoading) {
+                item(
+                    span = {
+                        GridItemSpan(2)
+                    }
+                ) {
+                    Card(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .wrapContentHeight()
+                    ) {
+                        Text("Loading Pagination")
+                    }
                 }
             }
+        }
+
+        PullRefreshIndicator(
+            refreshing = isRefreshing,
+            state = refershState,
+            modifier = Modifier.align(Alignment.TopCenter)
+        )
+
+        LaunchedEffect(listState.layoutInfo.visibleItemsInfo.lastIndex) {
+            if (canPaginate && (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                    ?: 0) >= (users.size - 1)
+            ) {
+                fetchNextPage()
+            }
+            Log.d("Pagination", "${listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index} ${users.size}")
         }
     }
 }

@@ -1,6 +1,7 @@
 package dev.rivu.composeclass1.ui.theme
 
 import androidx.compose.material3.Typography
+import androidx.compose.material.Typography as TypographyM2
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -69,6 +70,30 @@ val Typography = Typography(
         letterSpacing = 0.5.sp
     )
     */
+)
+// Set of Material typography styles to start with
+val TypographyM2 = TypographyM2(
+    body1 = TextStyle(
+        fontFamily = DancingScript,
+        fontWeight = FontWeight.SemiBold,
+        fontSize = 22.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    body2 = TextStyle(
+        fontFamily = DancingScript,
+        fontWeight = FontWeight.Normal,
+        fontSize = 16.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
+    subtitle1 = TextStyle(
+        fontFamily = DancingScript,
+        fontWeight = FontWeight.Normal,
+        fontSize = 14.sp,
+        lineHeight = 24.sp,
+        letterSpacing = 0.5.sp
+    ),
 )
 
 val SilkscreenFamily = FontFamily(

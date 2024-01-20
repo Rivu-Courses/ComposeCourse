@@ -5,18 +5,13 @@ import android.os.Handler
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
+import androidx.compose.material.MaterialTheme
+import androidx.compose.material.Surface
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import dagger.hilt.EntryPoint
 import dagger.hilt.android.AndroidEntryPoint
-import dagger.hilt.android.HiltAndroidApp
-import dev.rivu.composeclass1.ui.AnchoredDrag
-import dev.rivu.composeclass1.ui.DragText
 import dev.rivu.composeclass1.ui.HomePageState
-import dev.rivu.composeclass1.ui.SwipeDrag
-import dev.rivu.composeclass1.ui.theme.ComposeClass1Theme
+import dev.rivu.composeclass1.ui.theme.ComposeClassTheme
 import dev.rivu.composeclass1.userslist.ui.PaginatedUsersListScreen
 
 @AndroidEntryPoint
@@ -36,11 +31,11 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         val effectsViewModel = EffectsViewModel()
         setContent {
-            ComposeClass1Theme {
+            ComposeClassTheme {
                 // A surface container using the 'background' color from the theme
                 Surface(
                     modifier = Modifier.fillMaxSize(),
-                    color = MaterialTheme.colorScheme.background
+                    color = MaterialTheme.colors.background
                 ) {
                     PaginatedUsersListScreen()
                 }

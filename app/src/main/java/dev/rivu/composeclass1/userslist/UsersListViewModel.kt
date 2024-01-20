@@ -18,16 +18,20 @@ import javax.inject.Inject
 @HiltViewModel
 class UsersListViewModel @Inject constructor(
     private val usersRepo: UsersRepository
-): ViewModel() {
+) : ViewModel() {
     var usersState: UsersState by mutableStateOf(UsersState())
         private set
 
     private var pageNo: Int = 0
 
-    fun fetchUsers() {
+    fun fetchUsers(p2r: Boolean = false) {
         usersState = if (usersState.users.isNullOrEmpty()) {
             UsersState(
                 isLoading = true
+            )
+        } else if (p2r) {
+            usersState.copy(
+                isP2RLoading = true
             )
         } else {
             usersState.copy(
@@ -38,28 +42,40 @@ class UsersListViewModel @Inject constructor(
         viewModelScope.launch(Dispatchers.IO) {
             try {
                 delay(1000)
-                val usersListModel = usersRepo.getUsersList(pageNo)
+                val usersListModel = usersRepo.getUsersList(
+                    if (p2r) {
+                        0
+                    } else {
+                        pageNo
+                    }
+                )
                 val users = usersListModel.users
                 Log.d("Pagination", "Page $pageNo")
 
                 val updatedState = usersState.copy(
-                    users = (usersState.users ?: emptyList()) + users,
+                    users = if (p2r) users else (usersState.users ?: emptyList()) + users,
                     isPaginationLoading = false,
                     isLoading = false,
                     errorDetails = null,
+                    isP2RLoading = false,
                     canPaginate = usersListModel.currentPage < usersListModel.totalPageCount
                 )
 
                 withContext(Dispatchers.Main) {
                     usersState = updatedState
                 }
-                pageNo++
-            } catch(e: Exception) {
+                if (p2r) {
+                    pageNo = 1
+                } else {
+                    pageNo++
+                }
+            } catch (e: Exception) {
                 withContext(Dispatchers.Main) {
                     usersState = usersState.copy(
                         errorDetails = Error.CustomError(e.message ?: "Something went wrong"),
                         isLoading = false,
-                        isPaginationLoading = false
+                        isPaginationLoading = false,
+                        isP2RLoading = false,
                     )
                 }
                 pageNo = 0
@@ -68,7 +84,7 @@ class UsersListViewModel @Inject constructor(
     }
 }
 
-data class UsersState (
+data class UsersState(
     val users: List<UserDataModel>? = null,
     val isLoading: Boolean = false,
     val isPaginationLoading: Boolean = false,
@@ -80,7 +96,7 @@ data class UsersState (
 sealed class Error(
     open val message: String
 ) {
-    object ServerError: Error(message = "Server Error Happened.\nPlease Try Again")
+    object ServerError : Error(message = "Server Error Happened.\nPlease Try Again")
 
-    data class CustomError(override val message: String): Error(message)
+    data class CustomError(override val message: String) : Error(message)
 }
