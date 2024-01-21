@@ -17,6 +17,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.material.Card
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.material.ExperimentalMaterialApi
 import androidx.compose.material.Text
 import androidx.compose.material.pullrefresh.PullRefreshIndicator
@@ -24,14 +25,19 @@ import androidx.compose.material.pullrefresh.pullRefresh
 import androidx.compose.material.pullrefresh.rememberPullRefreshState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
+import com.theapache64.rebugger.Rebugger
 import dev.rivu.composeclass1.userslist.UsersListViewModel
 import dev.rivu.composeclass1.userslist.data.model.UserDataModel
+import kotlinx.collections.immutable.ImmutableList
 
 @Composable
 fun PaginatedUsersListScreen(
@@ -43,13 +49,31 @@ fun PaginatedUsersListScreen(
         viewModel.fetchUsers()
     }
 
+    val fetchNextPage: ()->Unit by remember {
+        mutableStateOf(
+            {
+                viewModel.fetchUsers()
+            }
+        )
+    }
+
+    val onRefresh: ()->Unit by remember {
+        mutableStateOf(
+            {
+                viewModel.fetchUsers(true)
+            }
+        )
+    }
+
     Box(modifier = Modifier
         .background(Color.White)
         .padding(15.dp)
     ) {
         when {
             state.isLoading -> {
-                Text("Loading")
+                CircularProgressIndicator(
+                    modifier = Modifier.matchParentSize().padding(15.dp).align(Alignment.Center)
+                )
             }
             state.errorDetails != null -> {
                 Text("Error ${state.errorDetails.message}")
@@ -61,12 +85,8 @@ fun PaginatedUsersListScreen(
                     state.canPaginate,
                     state.isP2RLoading,
                     modifier = Modifier.fillMaxSize(),
-                    fetchNextPage = {
-                        viewModel.fetchUsers()
-                    },
-                    onRefresh = {
-                        viewModel.fetchUsers(true)
-                    }
+                    fetchNextPage = fetchNextPage,
+                    onRefresh = onRefresh
                 )
             }
         }
@@ -76,7 +96,7 @@ fun PaginatedUsersListScreen(
 @OptIn(ExperimentalMaterialApi::class)
 @Composable
 fun ShowUsersList(
-    users: List<UserDataModel>,
+    users: ImmutableList<UserDataModel>,
     isPaginationLoading: Boolean,
     canPaginate: Boolean,
     isRefreshing: Boolean,
@@ -128,6 +148,20 @@ fun ShowUsersList(
             }
             Log.d("Pagination", "${listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index} ${users.size}")
         }
+
+        Rebugger(
+            mapOf (
+                "users" to users,
+                "isPaginationLoading" to isPaginationLoading,
+                "canPaginate" to canPaginate,
+                "isRefreshing" to isRefreshing,
+                "modifier" to modifier,
+                "fetchNextPage" to fetchNextPage,
+                "onRefresh" to onRefresh,
+                "refershState" to refershState,
+                "listState" to listState,
+            )
+        )
     }
 }
 

@@ -9,6 +9,8 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.rivu.composeclass1.userslist.data.UsersRepository
 import dev.rivu.composeclass1.userslist.data.model.UserDataModel
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -53,7 +55,7 @@ class UsersListViewModel @Inject constructor(
                 Log.d("Pagination", "Page $pageNo")
 
                 val updatedState = usersState.copy(
-                    users = if (p2r) users else (usersState.users ?: emptyList()) + users,
+                    users = (if (p2r) users else (usersState.users ?: emptyList()) + users).toImmutableList(),
                     isPaginationLoading = false,
                     isLoading = false,
                     errorDetails = null,
@@ -85,7 +87,7 @@ class UsersListViewModel @Inject constructor(
 }
 
 data class UsersState(
-    val users: List<UserDataModel>? = null,
+    val users: ImmutableList<UserDataModel>? = null,
     val isLoading: Boolean = false,
     val isPaginationLoading: Boolean = false,
     val isP2RLoading: Boolean = false,

@@ -5,6 +5,7 @@ plugins {
     kotlin("kapt")
     id("kotlin-parcelize")
     id("com.google.dagger.hilt.android")
+    id ("dev.shreyaspatil.compose-compiler-report-generator") version "1.1.0"
 }
 
 android {
@@ -87,6 +88,11 @@ dependencies {
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
+    debugImplementation("io.github.theapache64:rebugger:1.0.0-rc02") {
+        exclude("androidx.compose.material3")
+    }
+
+    implementation("org.jetbrains.kotlinx:kotlinx-collections-immutable-jvm:0.3.7")
 
 
     implementation(libs.hilt.android)
