@@ -88,7 +88,7 @@ dependencies {
     // define any required OkHttp artifacts without version
     implementation("com.squareup.okhttp3:okhttp")
     implementation("com.squareup.okhttp3:logging-interceptor")
-    debugImplementation("io.github.theapache64:rebugger:1.0.0-rc02") {
+    implementation("io.github.theapache64:rebugger:1.0.0-rc02") {
         exclude("androidx.compose.material3")
     }
 

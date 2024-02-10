@@ -14,6 +14,8 @@ import kotlinx.collections.immutable.toImmutableList
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.withContext
 import javax.inject.Inject
 
@@ -24,63 +26,77 @@ class UsersListViewModel @Inject constructor(
     var usersState: UsersState by mutableStateOf(UsersState())
         private set
 
+    val mutex = Mutex()
+
     private var pageNo: Int = 0
 
     fun fetchUsers(p2r: Boolean = false) {
-        usersState = if (usersState.users.isNullOrEmpty()) {
-            UsersState(
-                isLoading = true
-            )
-        } else if (p2r) {
-            usersState.copy(
-                isP2RLoading = true
-            )
-        } else {
-            usersState.copy(
-                isPaginationLoading = true
-            )
-        }
-
-        viewModelScope.launch(Dispatchers.IO) {
-            try {
-                delay(1000)
-                val usersListModel = usersRepo.getUsersList(
-                    if (p2r) {
-                        0
-                    } else {
-                        pageNo
-                    }
-                )
-                val users = usersListModel.users
-                Log.d("Pagination", "Page $pageNo")
-
-                val updatedState = usersState.copy(
-                    users = (if (p2r) users else (usersState.users ?: emptyList()) + users).toImmutableList(),
-                    isPaginationLoading = false,
-                    isLoading = false,
-                    errorDetails = null,
-                    isP2RLoading = false,
-                    canPaginate = usersListModel.currentPage < usersListModel.totalPageCount
-                )
-
-                withContext(Dispatchers.Main) {
-                    usersState = updatedState
+        Log.d("Pagination", "fetchUsers called ${mutex.isLocked}\nUserState $usersState")
+        viewModelScope.launch {
+            mutex.withLock {
+                val isLoading =
+                    usersState.isLoading || usersState.isP2RLoading || usersState.isPaginationLoading
+                if (isLoading) {
+                    return@withLock
                 }
-                if (p2r) {
-                    pageNo = 1
+
+                usersState = if (usersState.users.isNullOrEmpty()) {
+                    UsersState(
+                        isLoading = true
+                    )
+                } else if (p2r) {
+                    usersState.copy(
+                        isP2RLoading = true
+                    )
                 } else {
-                    pageNo++
-                }
-            } catch (e: Exception) {
-                withContext(Dispatchers.Main) {
-                    usersState = usersState.copy(
-                        errorDetails = Error.CustomError(e.message ?: "Something went wrong"),
-                        isLoading = false,
-                        isPaginationLoading = false,
-                        isP2RLoading = false,
+                    usersState.copy(
+                        isPaginationLoading = true
                     )
                 }
-                pageNo = 0
+
+                withContext(Dispatchers.IO) {
+                    try {
+                        delay(1000)
+                        val usersListModel = usersRepo.getUsersList(
+                            if (p2r) {
+                                0
+                            } else {
+                                pageNo
+                            }
+                        )
+                        val users = usersListModel.users
+                        Log.d("Pagination", "Page $pageNo")
+
+                        val updatedState = usersState.copy(
+                            users = (if (p2r) users else (usersState.users
+                                ?: emptyList()) + users).toImmutableList(),
+                            isPaginationLoading = false,
+                            isLoading = false,
+                            errorDetails = null,
+                            isP2RLoading = false,
+                            canPaginate = usersListModel.currentPage < usersListModel.totalPageCount
+                        )
+
+                        withContext(Dispatchers.Main) {
+                            usersState = updatedState
+                        }
+                        if (p2r) {
+                            pageNo = 1
+                        } else {
+                            pageNo++
+                        }
+                    } catch (e: Exception) {
+                        withContext(Dispatchers.Main) {
+                            usersState = usersState.copy(
+                                errorDetails = Error.CustomError(e.message ?: "Something went wrong"),
+                                isLoading = false,
+                                isPaginationLoading = false,
+                                isP2RLoading = false,
+                            )
+                        }
+                        pageNo = 0
+                    }
+                }
             }
         }
     }

@@ -28,6 +28,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -104,6 +105,18 @@ fun ShowUsersList(
     fetchNextPage: () -> Unit,
     onRefresh: () -> Unit
 ) {
+
+    var shouldFetchNextPage by remember(users.size) {
+        mutableStateOf(false)
+    }
+
+    LaunchedEffect(shouldFetchNextPage) {
+        if (shouldFetchNextPage) {
+            Log.d("Pagination", "Fetch Next Page ${users.size}")
+            fetchNextPage()
+        }
+    }
+
     val refershState = rememberPullRefreshState(isRefreshing, onRefresh = onRefresh)
     Box(
         modifier = modifier.pullRefresh(refershState, true)
@@ -140,14 +153,15 @@ fun ShowUsersList(
             modifier = Modifier.align(Alignment.TopCenter)
         )
 
-        LaunchedEffect(listState.layoutInfo.visibleItemsInfo.lastIndex) {
-            if (canPaginate && (listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
-                    ?: 0) >= (users.size - 1)
-            ) {
-                fetchNextPage()
+        trackScroll(
+            listState = listState,
+            maxSize = users.size - 1,
+            onPageEnd = {
+                if (canPaginate) {
+                    shouldFetchNextPage = true
+                }
             }
-            Log.d("Pagination", "${listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index} ${users.size}")
-        }
+        )
 
         Rebugger(
             mapOf (
@@ -160,8 +174,21 @@ fun ShowUsersList(
                 "onRefresh" to onRefresh,
                 "refershState" to refershState,
                 "listState" to listState,
+                "shouldFetchNextPage" to shouldFetchNextPage
             )
         )
+    }
+}
+
+@Composable
+fun trackScroll(listState: LazyGridState, maxSize: Int, onPageEnd: ()->Unit) {
+    LaunchedEffect(listState.layoutInfo.visibleItemsInfo.lastIndex) {
+        if ((listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index
+                ?: 0) >= (maxSize)
+        ) {
+            Log.d("Pagination", "lastIndex : ${listState.layoutInfo.visibleItemsInfo.lastOrNull()?.index} | users size $maxSize")
+            onPageEnd()
+        }
     }
 }
 
