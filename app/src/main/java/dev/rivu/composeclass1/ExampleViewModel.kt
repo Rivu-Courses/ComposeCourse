@@ -6,7 +6,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import kotlinx.parcelize.Parcelize
 
-class ExampleViewModel: ViewModel() {
+open class ExampleViewModel: ViewModel() {
 
     val state: MutableState<ViewModelState> = mutableStateOf(
         ViewModelState(
@@ -15,7 +15,7 @@ class ExampleViewModel: ViewModel() {
         )
     )
 
-    fun doSomething() {
+    open fun doSomething() {
         state.value = ViewModelState(
             text = "Somthing",
             state = true

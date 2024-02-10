@@ -24,6 +24,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.testTag
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -36,8 +38,9 @@ import dev.rivu.composeclass1.ExampleViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppHome() {
-    val viewModel: ExampleViewModel = viewModel()
+fun AppHome(
+    viewModel: ExampleViewModel = viewModel()
+) {
     val navController = rememberNavController()
     Scaffold(
         topBar = {
@@ -57,18 +60,38 @@ fun AppHome() {
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text("Screen 1", modifier = Modifier.clickable {
-                        navController.navigate("screen1")
-                    })
-                    Text("Screen 2", modifier = Modifier.clickable {
-                        navController.navigate("screen2?parameter=Abc")
-                    })
-                    Text("Bottom Sheet", modifier = Modifier.clickable {
-                        navController.navigate("bottomBar")
-                    })
-                    Text("User Interaction", modifier = Modifier.clickable {
-                        navController.navigate("userInteraction")
-                    })
+                    Text("Screen 1", modifier = Modifier
+                        .clickable {
+                            navController.navigate("screen1")
+                        }
+                        .semantics {
+                            testTag = "navScreen1"
+                        }
+                    )
+                    Text("Screen 2", modifier = Modifier
+                        .clickable {
+                            navController.navigate("screen2?parameter=Abc")
+                        }
+                        .semantics {
+                            testTag = "navScreen2"
+                        }
+                    )
+                    Text("Bottom Sheet", modifier = Modifier
+                        .clickable {
+                            navController.navigate("bottomBar")
+                        }
+                        .semantics {
+                            testTag = "navScreenBottomSheet"
+                        }
+                    )
+                    Text("User Interaction", modifier = Modifier
+                        .clickable {
+                            navController.navigate("userInteraction")
+                        }
+                        .semantics {
+                            testTag = "navScreenUI"
+                        }
+                    )
 
                 }
             }
@@ -92,7 +115,9 @@ fun AppNavigation(modifier: Modifier, navController: NavHostController) {
     val coroutineScope = rememberCoroutineScope()
     ModalBottomSheetLayout(
         sheetState = sheetState,
-        modifier = modifier,
+        modifier = modifier.semantics {
+            testTag = "navBottomSheet"
+        },
         sheetContent = {
             Text(
                 "Bottom Sheet",
@@ -143,6 +168,9 @@ fun Screen1(
 ) {
     Column(
         modifier = modifier.background(Color.Green)
+            .semantics {
+                testTag = "Screen1"
+            }
     ) {
         Text("Screen 1", color = Color.DarkGray)
     }
@@ -152,7 +180,9 @@ fun Screen1(
 @Composable
 fun Screen2(modifier: Modifier, parameter: String?) {
     Column(
-        modifier = modifier.background(Color.Blue)
+        modifier = modifier.background(Color.Blue).semantics {
+            testTag = "Screen2"
+        }
     ) {
         Text("Screen 2 ${parameter ?: ""}")
     }
@@ -161,7 +191,9 @@ fun Screen2(modifier: Modifier, parameter: String?) {
 @Composable
 fun Screen3(modifier: Modifier) {
     Column(
-        modifier = modifier.background(Color.Red)
+        modifier = modifier.background(Color.Red).semantics {
+            testTag = "Screen3"
+        }
     ) {
         Text("Screen 3")
     }

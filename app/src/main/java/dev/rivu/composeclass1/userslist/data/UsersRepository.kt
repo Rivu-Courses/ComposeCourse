@@ -21,6 +21,10 @@ class UsersRepository @Inject constructor(
 
         Log.d("Pagination", "offset $offset")
 
+        if (usersResponse.users.isEmpty()) {
+            throw RuntimeException("Empty Page")
+        }
+
         return UsersListModel(
             currentPage = pageNo,
             totalPageCount = usersResponse.totalUsers / limit,
